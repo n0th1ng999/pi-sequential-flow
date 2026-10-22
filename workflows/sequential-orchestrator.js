@@ -60,7 +60,8 @@ for (let i = 0; i < tasks.length; i++) {
 
   const scoutRun = await runs.run(scoutKey, {
     agent: "scout",
-    task: scoutPrompt
+    task: scoutPrompt,
+    acceptance: false
   });
 
   const scoutPacket = scoutRun.output || "No recon output captured.";
@@ -75,15 +76,18 @@ for (let i = 0; i < tasks.length; i++) {
     "Cold-Start Context Packet from Scout:",
     scoutPacket,
     "",
-    "Instructions:",
+    "CRITICAL EXECUTION MANDATE:",
+    "- You MUST call the `write` tool to physically save every source code and test file to disk. Markdown code fences in text DO NOT create files.",
+    "- If initializing the project, run setup commands via `bash` (e.g. npm init -y, install dependencies, npx prisma init).",
     "- Implement production code and automated unit/integration tests for these requirements.",
     "- Ensure all types and exports are strictly valid.",
-    "- Keep tests deterministic."
+    "- Verify syntax and run tests with `bash` before concluding."
   ].join("\n");
 
   const coderRun = await runs.run(coderKey, {
     agent: "coder",
-    task: coderPrompt
+    task: coderPrompt,
+    acceptance: false
   });
 
   emit(">>> " + taskLabel + " [PHASE: TESTING & DEBUG LOOP]");
@@ -97,16 +101,17 @@ for (let i = 0; i < tasks.length; i++) {
     const testKey = "test-t" + (i + 1) + "-r" + round;
     const testPrompt = [
       "VERIFICATION FOR " + taskLabel + " (Round " + round + "/3)",
-      "Verify the implementation code by running the appropriate test and typecheck commands.",
-      "Return a structured evaluation ending with either:",
+      "Run the test suite and typecheck commands using the `bash` tool.",
+      "Inspect the results and conclude your response with either:",
       "VERDICT: PASS",
       "or",
-      "VERDICT: FAIL (with detailed error logs and failing assertion stack traces)"
+      "VERDICT: FAIL (with details on failing tests or missing files)"
     ].join("\n");
 
     const testRun = await runs.run(testKey, {
       agent: "tester",
-      task: testPrompt
+      task: testPrompt,
+      acceptance: false
     });
 
     finalTestOutput = testRun.output || "";
@@ -125,18 +130,20 @@ for (let i = 0; i < tasks.length; i++) {
       const debugKey = "debug-t" + (i + 1) + "-r" + round;
       const debugPrompt = [
         "BUG-FIXING FOR " + taskLabel + " (Round " + round + "/3)",
-        "The tester reported the following failure:",
+        "The tester reported the following outcome:",
         finalTestOutput,
         "",
-        "CRITICAL ANTI-TAMPER GUARDRAIL:",
+        "CRITICAL INSTRUCTIONS:",
         "- You are fixing the implementation code to satisfy the tests.",
-        "- You are STRICTLY FORBIDDEN from deleting, weakening, skipping, or modifying test assertions.",
-        "- Diagnose the root cause in the production code and apply minimal, precise fixes."
+        "- You MUST use the `edit` or `write` tools to update files on disk.",
+        "- ANTI-TAMPER GUARDRAIL: You are STRICTLY FORBIDDEN from deleting, weakening, skipping, or modifying test assertions.",
+        "- Apply fixes to disk, verify with `bash`, and output a summary of changes."
       ].join("\n");
 
       await runs.run(debugKey, {
         agent: "debugger",
-        task: debugPrompt
+        task: debugPrompt,
+        acceptance: false
       });
     } else {
       emit(">>> " + taskLabel + " ❌ FAILED after 3 debug rounds. Escalating to human supervisor.");
