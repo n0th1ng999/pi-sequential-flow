@@ -13,6 +13,9 @@
   ],
   "license": "MIT",
   "pi": {
+    "extensions": [
+      "./extensions/sequential-flow.ts"
+    ],
     "prompts": [
       "./prompts/*.md"
     ],
