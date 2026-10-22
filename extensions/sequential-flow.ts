@@ -1,9 +1,9 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as crypto from "node:crypto";
 
 export default function (pi: ExtensionAPI) {
-  // Register slash command /seq-flow and /sequential-flow
   const registerSequentialFlow = (cmdName: string) => {
     pi.registerCommand(cmdName, {
       description: "Automated Sequential Multi-Agent Orchestration Flow (Scout -> Coder -> Tester -> Debugger)",
@@ -16,7 +16,7 @@ export default function (pi: ExtensionAPI) {
           return;
         }
 
-        ctx.ui.notify(`Initializing Sequential Workflow for ${specFileName}...`, "info");
+        ctx.ui.notify(`[Sequential Flow] Initializing for ${specFileName}...`, "info");
 
         // 1. Ensure workflows/sequential-orchestrator.js exists in project
         const projectWorkflowDir = path.join(ctx.cwd, "workflows");
@@ -75,13 +75,40 @@ export default function (pi: ExtensionAPI) {
           fs.writeFileSync(phasePath, initialPhase, "utf-8");
         }
 
-        ctx.ui.notify("Triggering automated subagent workflow...", "info");
+        ctx.ui.notify("[Sequential Flow] Spawning workflow via pi-subagents RPC...", "info");
 
-        // 3. Send direct, imperative tool invocation message to agent session
-        pi.sendUserMessage(
-          `Execute the sequential workflow immediately by invoking the subagent tool with {"workflow": "./workflows/sequential-orchestrator.js"}. Do not output any conversational plan or markdown blocks; execute the tool call now.`
-        );
-      }
+        // 3. Dispatch directly via pi-subagents in-process RPC (No LLM prompt needed!)
+        const requestId = crypto.randomUUID();
+
+        const replyPromise = new Promise<{ success: boolean; data?: any; error?: any }>((resolve) => {
+          const timeout = setTimeout(() => {
+            resolve({ success: false, error: { message: "RPC spawn timed out after 10s" } });
+          }, 10000);
+
+          pi.events.on(`subagents:rpc:v1:reply:${requestId}`, (reply: any) => {
+            clearTimeout(timeout);
+            resolve(reply);
+          });
+        });
+
+        pi.events.emit("subagents:rpc:v1:request", {
+          version: 1,
+          requestId,
+          method: "spawn",
+          params: {
+            workflow: "./workflows/sequential-orchestrator.js",
+            cwd: ctx.cwd,
+          },
+        });
+
+        const reply = await replyPromise;
+        if (reply.success) {
+          const runId = reply.data?.runId || "active";
+          ctx.ui.notify(`[Sequential Flow] Workflow spawned successfully! Run ID: ${runId}`, "info");
+        } else {
+          ctx.ui.notify(`[Sequential Flow] RPC Error: ${reply.error?.message || "Unknown error"}`, "error");
+        }
+      },
     });
   };
 
