@@ -3,7 +3,6 @@ name: coder
 description: Implementation agent that writes both tests and production code for a specific requirement using the scout context packet
 aliases: writer, implementer
 acceptanceRole: writer
-model: llama.cpp/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF:Q4_K_M
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
