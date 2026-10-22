@@ -4,7 +4,6 @@ description: Bug-fixing specialist that diagnoses errors from the tester and rep
 aliases: fixer
 acceptanceRole: writer
 model: llama.cpp/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF:Q4_K_M
-thinking: off
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

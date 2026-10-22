@@ -4,7 +4,6 @@ description: Codebase reconnaissance specialist that maps files, types, and depe
 aliases: explorer, recon
 acceptanceRole: read-only
 model: llama.cpp/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF:Q4_K_M
-thinking: off
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false

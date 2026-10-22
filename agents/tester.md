@@ -3,7 +3,6 @@ name: tester
 description: Deterministic test reviewer and evaluator that executes tests and reports structured PASS/FAIL verdicts with error traces
 acceptanceRole: read-only
 model: llama.cpp/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF:Q4_K_M
-thinking: off
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
