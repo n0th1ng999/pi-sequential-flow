@@ -49,13 +49,12 @@ for (let i = 0; i < tasks.length; i++) {
   // 1. RECON PHASE (Scout)
   const scoutKey = "recon-t" + (i + 1);
   const scoutPrompt = [
-    "RECONNAISSANCE FOR " + taskLabel,
-    "Task Requirements: " + task.requirements,
+    "Task: RECONNAISSANCE FOR " + taskLabel,
+    "Requirements: " + task.requirements,
     "",
-    "Inspect the repository and generate a concise Cold-Start Context Packet containing:",
-    "1. Target source and test files to create or modify",
-    "2. Key interfaces, data models, or existing patterns",
-    "3. Exact test runner and verification commands (e.g. npm test, vitest, typecheck)"
+    "Inspect the repository using your tools (bash e.g. ls -la, read).",
+    "Identify target files, data models/schemas, and the test command to run.",
+    "Output a concise Cold-Start Context Packet."
   ].join("\n");
 
   const scoutRun = await runs.run(scoutKey, {
@@ -70,18 +69,17 @@ for (let i = 0; i < tasks.length; i++) {
   // 2. IMPLEMENTATION PHASE (Coder)
   const coderKey = "coder-t" + (i + 1);
   const coderPrompt = [
-    "IMPLEMENTATION FOR " + taskLabel,
-    "Task Requirements: " + task.requirements,
+    "Task: IMPLEMENTATION FOR " + taskLabel,
+    "Requirements: " + task.requirements,
     "",
-    "Cold-Start Context Packet from Scout:",
+    "Context from Scout:",
     scoutPacket,
     "",
-    "CRITICAL EXECUTION MANDATE:",
-    "- You MUST call the `write` tool to physically save every source code and test file to disk. Markdown code fences in text DO NOT create files.",
-    "- If initializing the project, run setup commands via `bash` (e.g. npm init -y, install dependencies, npx prisma init).",
-    "- Implement production code and automated unit/integration tests for these requirements.",
-    "- Ensure all types and exports are strictly valid.",
-    "- Verify syntax and run tests with `bash` before concluding."
+    "MANDATORY DIRECTIVE: You must actively implement this task using your tools right now.",
+    "- Call `write` to physically create all required source and test files on disk.",
+    "- Call `bash` to run package initialization, install dependencies, or run Prisma generators.",
+    "- Do NOT output markdown code blocks or explanations in text instead of calling tools.",
+    "- Call your tools directly to make changes to the repository now."
   ].join("\n");
 
   const coderRun = await runs.run(coderKey, {
@@ -100,12 +98,11 @@ for (let i = 0; i < tasks.length; i++) {
   for (let round = 1; round <= 3; round++) {
     const testKey = "test-t" + (i + 1) + "-r" + round;
     const testPrompt = [
-      "VERIFICATION FOR " + taskLabel + " (Round " + round + "/3)",
-      "Run the test suite and typecheck commands using the `bash` tool.",
-      "Inspect the results and conclude your response with either:",
-      "VERDICT: PASS",
-      "or",
-      "VERDICT: FAIL (with details on failing tests or missing files)"
+      "Task: VERIFICATION FOR " + taskLabel + " (Round " + round + "/3)",
+      "MANDATORY DIRECTIVE: You must run the tests using your `bash` tool right now.",
+      "- Call `bash` to execute the test suite (e.g. npm test, npx vitest run, npx tsc --noEmit).",
+      "- Do NOT just write bash commands in text; call the `bash` tool.",
+      "- Conclude your turn with: `VERDICT: PASS` if tests pass, or `VERDICT: FAIL` if tests fail or files are missing."
     ].join("\n");
 
     const testRun = await runs.run(testKey, {
@@ -129,15 +126,15 @@ for (let i = 0; i < tasks.length; i++) {
       emit(">>> " + taskLabel + " ⚠️ Tests failed. Launching Debugger (Round " + round + "/3)...");
       const debugKey = "debug-t" + (i + 1) + "-r" + round;
       const debugPrompt = [
-        "BUG-FIXING FOR " + taskLabel + " (Round " + round + "/3)",
+        "Task: BUG-FIXING FOR " + taskLabel + " (Round " + round + "/3)",
         "The tester reported the following outcome:",
         finalTestOutput,
         "",
-        "CRITICAL INSTRUCTIONS:",
-        "- You are fixing the implementation code to satisfy the tests.",
-        "- You MUST use the `edit` or `write` tools to update files on disk.",
-        "- ANTI-TAMPER GUARDRAIL: You are STRICTLY FORBIDDEN from deleting, weakening, skipping, or modifying test assertions.",
-        "- Apply fixes to disk, verify with `bash`, and output a summary of changes."
+        "MANDATORY DIRECTIVE: You must actively repair the code using your tools right now.",
+        "- Call `edit` or `write` to update the application files on disk.",
+        "- ANTI-TAMPER: Never delete or weaken test assertions.",
+        "- Call `bash` to verify your changes.",
+        "- Do NOT output text explanations without executing tool calls."
       ].join("\n");
 
       await runs.run(debugKey, {
