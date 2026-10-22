@@ -1,0 +1,34 @@
+{
+  "name": "pi-sequential-flow",
+  "version": "1.0.0",
+  "description": "Sequential multi-agent development and testing orchestration flow for Pi agent harness and pi-subagents",
+  "keywords": [
+    "pi-package",
+    "pi-subagents",
+    "orchestration",
+    "multi-agent",
+    "tdd",
+    "testing",
+    "hitl"
+  ],
+  "license": "MIT",
+  "pi": {
+    "prompts": [
+      "./prompts/*.md"
+    ],
+    "subagents": {
+      "agents": [
+        "./agents"
+      ]
+    }
+  },
+  "pi-subagents": {
+    "agents": [
+      "./agents"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "pi-subagents": "*"
+  }
+}
