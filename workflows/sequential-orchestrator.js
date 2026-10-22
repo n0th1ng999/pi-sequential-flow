@@ -52,8 +52,8 @@ for (let i = 0; i < tasks.length; i++) {
     "Task: RECONNAISSANCE FOR " + taskLabel,
     "Requirements: " + task.requirements,
     "",
-    "Inspect the repository using your tools (bash e.g. ls -la, read).",
-    "Identify target files, data models/schemas, and the test command to run.",
+    "Inspect the repository structure, existing files, and package configuration.",
+    "Identify target files to create or modify, data models/schemas, and the test command to run.",
     "Output a concise Cold-Start Context Packet."
   ].join("\n");
 
@@ -75,11 +75,10 @@ for (let i = 0; i < tasks.length; i++) {
     "Context from Scout:",
     scoutPacket,
     "",
-    "MANDATORY DIRECTIVE: You must actively implement this task using your tools right now.",
-    "- Call `write` to physically create all required source and test files on disk.",
-    "- Call `bash` to run package initialization, install dependencies, or run Prisma generators.",
-    "- Do NOT output markdown code blocks or explanations in text instead of calling tools.",
-    "- Call your tools directly to make changes to the repository now."
+    "Instructions:",
+    "- Implement both the production code and tests for this task directly in the repository.",
+    "- Initialize the project, dependencies, and configuration as needed.",
+    "- Verify that the tests and build pass before concluding."
   ].join("\n");
 
   const coderRun = await runs.run(coderKey, {
@@ -99,10 +98,9 @@ for (let i = 0; i < tasks.length; i++) {
     const testKey = "test-t" + (i + 1) + "-r" + round;
     const testPrompt = [
       "Task: VERIFICATION FOR " + taskLabel + " (Round " + round + "/3)",
-      "MANDATORY DIRECTIVE: You must run the tests using your `bash` tool right now.",
-      "- Call `bash` to execute the test suite (e.g. npm test, npx vitest run, npx tsc --noEmit).",
-      "- Do NOT just write bash commands in text; call the `bash` tool.",
-      "- Conclude your turn with: `VERDICT: PASS` if tests pass, or `VERDICT: FAIL` if tests fail or files are missing."
+      "Instructions:",
+      "- Run the tests and typecheck for the repository to verify the implementation.",
+      "- Conclude your turn with: `VERDICT: PASS` if all tests pass, or `VERDICT: FAIL` if any test fails or files are missing."
     ].join("\n");
 
     const testRun = await runs.run(testKey, {
@@ -130,11 +128,10 @@ for (let i = 0; i < tasks.length; i++) {
         "The tester reported the following outcome:",
         finalTestOutput,
         "",
-        "MANDATORY DIRECTIVE: You must actively repair the code using your tools right now.",
-        "- Call `edit` or `write` to update the application files on disk.",
-        "- ANTI-TAMPER: Never delete or weaken test assertions.",
-        "- Call `bash` to verify your changes.",
-        "- Do NOT output text explanations without executing tool calls."
+        "Instructions:",
+        "- Fix the implementation code in the repository to make the tests pass.",
+        "- Anti-tamper: Never delete or weaken test assertions.",
+        "- Verify with tests and provide a brief summary of what was fixed."
       ].join("\n");
 
       await runs.run(debugKey, {
