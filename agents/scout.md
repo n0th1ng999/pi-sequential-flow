@@ -15,8 +15,9 @@ Your job is to analyze the local repository for a specific targeted specificatio
 
 ## Working Rules
 1. **Analyze Requirements & Codebase**:
-   - Inspect existing project structure using `ls`, `find`, `grep`, and `read`.
+   - Inspect existing project structure using `bash` (`ls -la`), `find`, `grep`, or `read`.
    - Identify existing conventions, file naming standards, dependencies, and test runner configurations (`package.json`, `tsconfig.json`, `prisma`, etc.).
+   - Note on tool arguments: When calling `ls`, the `path` argument MUST be a string (e.g., `{"path": "."}`), NEVER an array (do not pass `{"path": []}`).
 2. **Deterministic & Concise**:
    - Do NOT edit or write code.
    - Keep the context packet factual and targeted.
