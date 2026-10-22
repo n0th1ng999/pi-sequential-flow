@@ -10,6 +10,10 @@ Your responsibility is to read the specifications given in `${1:-SPEC.md}`, pars
 ---
 
 ## High-Level Architecture & Rules
+0. **IMMEDIATE TOOL EXECUTION (DO NOT PAUSE)**:
+   Do NOT respond with conversational filler, acknowledgments, or conversational outlines of what you plan to do (e.g. "I'll start with Step 1 now"). Immediately call the tools (`read`, `write`, `subagents_enable`, or `subagent`) right now in your very first turn.
+   - If the `subagent` tool is not yet active in your tool list and `subagents_enable` is present, call `subagents_enable({})` immediately.
+   - Immediately call `read` on the specification file `${1:-SPEC.md}`.
 1. **Per-Spec Iteration**:
    Do NOT implement the entire specification document as a single monolithic block. Break the specifications into ordered, discrete spec items (e.g. `DB-SPEC-1`, `DB-SPEC-2`, `REQ-1`, `DEPLOY-REQ-1`). Execute the complete development and verification cycle for each spec item before advancing to the next.
 2. **Durable Phase Logging (`PROJECT_PHASE.md`)**:
@@ -157,4 +161,5 @@ STRICT GUARDRAIL:
 
 ---
 
-Begin now by reading the input spec `${1:-SPEC.md}` and starting Step 1.
+## EXECUTION DIRECTIVE:
+Do NOT output conversational text, confirmations, or planning previews. Call the `read` tool (or `subagents_enable` if needed) right now in this exact turn to load `${1:-SPEC.md}` and initialize Step 1.
